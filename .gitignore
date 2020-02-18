@@ -1,3 +1,7 @@
 .idea/
 *.npy
 fig.png
+__pycache__/
+*.csv
+*.png
+settings.json

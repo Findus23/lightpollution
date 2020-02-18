@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Lightpollution Mistelbach</title>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link rel="stylesheet" href="leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+    <script src="leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div id="map"></div>
+<script>
+    const map = L.map('map',{
+        zoomSnap:0.1,
+        center:[48.56766236706026, 16.571846008300785],
+        zoom:13
+    });
+
+    L.tileLayer("https://maps.lw1.at/tiles/1.0.0/osm/GLOBAL_MERCATOR/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    function reqListener() {
+        let layers = {};
+        let images = JSON.parse(this.responseText);
+        const def = "spline.png";
+        images.forEach(function (image) {
+            const l = L.imageOverlay(
+                image.filename,
+                image.bounds,
+                {opacity: 0.8, className: "theimage"}
+            );
+            if (image.filename === def) {
+                l.addTo(map);
+            }
+            layers[image.filename] = l
+        });
+        L.control.layers(layers, []).addTo(map);
+    }
+
+    const oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", "settings.json");
+    oReq.send();
+
+</script>
+
+
+</body>
+</html>
